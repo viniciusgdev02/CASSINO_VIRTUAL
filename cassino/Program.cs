@@ -34,7 +34,7 @@ class Cassino
 
     // ========== VARIÁVEIS ESPECÍFICAS DO FUTEBOL ==========
     // Nota: O C# usa 'timesFutebol' [123] onde o Portugol usa 'times' [328]
-    string[] timesFutebol = { "🦩 FLAMENGO", "👴 SÃO PAULO", "🐓 ATLETICO MG", "🐷 PALMEIRAS", "🐟 SANTOS", "🏳️‍🌈 CRUZEIRO" };
+    string[] timesFutebol = { "🦩 FLAMENGO", "👴 SÃO PAULO", "🐓 ATLETICO MG", "🐷 PALMEIRAS", "🐟 SANTOS", "🦊 CRUZEIRO" };
     int[] odds_futebol = { 25, 32, 28 }; // [Casa x 10, empate x 10, Visitante x 10] para simular decimais 
     int placar_casa = 0;
     int placar_visitante = 0;
@@ -64,7 +64,7 @@ class Cassino
     void mostrar_abertura()
     {
         Console.WriteLine("╔══════════════════════════════════════════════════════════╗");
-        Console.WriteLine("║                 🎰 CASSINO VAGABUNDO 🎰                  ║");
+        Console.WriteLine("║                 🎰 CASSINO VIRTUAL 🎰                    ║");
         Console.WriteLine("║                                                          ║");
         Console.WriteLine("║                     TESTE SUA SORTE                      ║");
         Console.WriteLine("║                                                          ║");
@@ -79,7 +79,7 @@ class Cassino
         while (true)
         {
             Console.WriteLine($"\n{repetir_char('=', 60)}");
-            Console.WriteLine("🎰               CASSINO VAGABUNDO - MENU PRINCIPAL     🎰");
+            Console.WriteLine("🎰               CASSINO VIRTUAL - MENU PRINCIPAL     🎰");
             Console.WriteLine($"👤 JOGADOR: {nomeJogador} | 💰 SALDO: R$ {dinheiroTotal} ({dinheiroTotal / 10} FICHAS)");
             Console.WriteLine(repetir_char('=', 60));
 
@@ -88,7 +88,7 @@ class Cassino
             Console.WriteLine("🏇 3 - CORRIDA DE CAVALOS");
             Console.WriteLine("⚽ 4 - BRASFUT");
             Console.WriteLine("💰 5 - VER SALDO E ESTATÍSTICAS");
-            Console.WriteLine("🚪 0 - CORRER DO VAGABUNDO");
+            Console.WriteLine("🚪 0 - FINALIZAR A JOGATINA");
             Console.WriteLine(repetir_char('=', 60));
             Console.Write("🎲 ESCOLHA SUA OPÇÃO: ");
 
@@ -212,7 +212,7 @@ class Cassino
     // ========== FUNÇÃO QUE ENCERRA O CASSINO ==========
     void finalizar_cassino()
     {
-        Console.WriteLine("\n🎰 === OBRIGADO POR JOGAR NO CASSINO VAGABUNDO === 🎰");
+        Console.WriteLine("\n🎰 === OBRIGADO POR JOGAR NO CASSINO VIRTUAL === 🎰");
         Console.WriteLine($"👤 JOGADOR: {nomeJogador}");
         Console.WriteLine($"💰 SALDO FINAL: R$ {dinheiroTotal} ({dinheiroTotal / 10} FICHAS)");
         Console.WriteLine($"🏆 VITÓRIAS TOTAIS: {vitoriasBlack + vitoriasHipica + vitoriasF}");
@@ -630,7 +630,7 @@ class Cassino
         while (true)
         {
             Console.WriteLine($"\n{repetir_char('=', 50)}");
-            Console.WriteLine("🏇 HIPÓDROMO VAGABUNDO 🏇");
+            Console.WriteLine("🏇 HIPÓDROMO 🏇");
             Console.WriteLine($"💰 SALDO: R$ {dinheiroTotal} ({dinheiroTotal / 10} FICHAS)");
             if (aposta_cavalos_global > 0)
             {
@@ -886,305 +886,485 @@ class Cassino
     // =========================================================================
     // ===================== SEÇÃO APOSTAS DE FUTEBOL (PORTADO) ================
     // =========================================================================
-
-    void iniciar_futebol()
+void iniciar_futebol()
+{
+    Console.WriteLine("\n⚽ === BEM-VINDO ÀS APOSTAS DE FUTEBOL === ⚽");
+    if (dinheiroTotal <= 0)
     {
-        Console.WriteLine("\n⚽ === BEM-VINDO ÀS APOSTAS DE FUTEBOL === ⚽");
-        if (dinheiroTotal <= 0)
-        {
-            Console.WriteLine("❌ VOCÊ PRECISA COMPRAR FICHAS PRIMEIRO!");
-            return;
-        }
-
-        menu_futebol();
-        Console.Clear(); // Limpa a tela ao sair do menu de futebol
+        Console.WriteLine("❌ VOCÊ PRECISA COMPRAR FICHAS PRIMEIRO!");
+        return;
     }
 
-    void menu_futebol()
+    menu_futebol();
+    Console.Clear();
+}
+
+void menu_futebol()
+{
+    if (aposta_futebol_global > 0)
     {
-        // Devolve dinheiro se aposta foi feita mas não simulada
+        Console.WriteLine($"APOSTA ANTERIOR DE R$ {aposta_futebol_global} CANCELADA E DEVOLVIDA.");
+        dinheiroTotal += aposta_futebol_global;
+    }
+
+    time_casa_global = random.Next(0, timesFutebol.Length);
+    time_visitante_global = random.Next(0, timesFutebol.Length);
+
+    while (time_casa_global == time_visitante_global)
+    {
+        time_visitante_global = random.Next(0, timesFutebol.Length);
+    }
+
+    jogo_ativo = false;
+    aposta_futebol_global = 0;
+    resultado_apostado_global = 0;
+
+    int opcao = -1;
+    while (true)
+    {
+        Console.WriteLine($"\n{repetir_char('=', 60)}");
+        Console.WriteLine("⚽ BRASFUT - APOSTAS ⚽");
+        Console.WriteLine($"💰 SALDO: R$ {dinheiroTotal} ({dinheiroTotal / 10} FICHAS)");
+        Console.WriteLine(repetir_char('=', 60));
+        Console.WriteLine("PARTIDA ATUAL:");
+        Console.WriteLine($"  CASA: {timesFutebol[time_casa_global]} (ODD: {odds_futebol[0] / 10.0}x)");
+        Console.WriteLine($"  EMPATE: (ODD: {odds_futebol[1] / 10.0}x)");
+        Console.WriteLine($"  VISITANTE: {timesFutebol[time_visitante_global]} (ODD: {odds_futebol[2] / 10.0}x)");
+
         if (aposta_futebol_global > 0)
         {
-            Console.WriteLine($"APOSTA ANTERIOR DE R$ {aposta_futebol_global} CANCELADA E DEVOLVIDA.");
-            dinheiroTotal += aposta_futebol_global;
+            string apostaFeita = "";
+            if (resultado_apostado_global == 1) apostaFeita = timesFutebol[time_casa_global];
+            else if (resultado_apostado_global == 2) apostaFeita = "EMPATE";
+            else apostaFeita = timesFutebol[time_visitante_global];
+
+            Console.WriteLine($"\n🎯 APOSTA ATUAL: {apostaFeita} - R$ {aposta_futebol_global}");
         }
 
-        // Seleciona aleatoriamente os times
-        time_casa_global = random.Next(0, timesFutebol.Length);
-        time_visitante_global = random.Next(0, timesFutebol.Length);
+        Console.WriteLine(repetir_char('=', 60));
+        Console.WriteLine("1. 💸 FAZER APOSTA");
+        Console.WriteLine("2. 🏟️  SIMULAR PARTIDA");
+        Console.WriteLine("3. 🔄 VER NOVA PARTIDA");
+        Console.WriteLine("0. 🔙 VOLTAR AO MENU PRINCIPAL");
+        Console.WriteLine(repetir_char('=', 60));
+        Console.Write("ESCOLHA UMA OPÇÃO: ");
 
-        // Garante que não sejam o mesmo time
-        while (time_casa_global == time_visitante_global)
+        try { opcao = Convert.ToInt32(Console.ReadLine()); } catch (FormatException) { opcao = -1; }
+
+        Console.Clear();
+
+        switch (opcao)
         {
-            time_visitante_global = random.Next(0, timesFutebol.Length);
-        }
-
-        // Reinicia o jogo
-        jogo_ativo = false;
-        aposta_futebol_global = 0;
-        resultado_apostado_global = 0;
-
-        int opcao = -1;
-        while (true)
-        {
-            Console.WriteLine($"\n{repetir_char('=', 60)}");
-            Console.WriteLine("⚽ BRASFUT - APOSTAS ⚽");
-            Console.WriteLine($"💰 SALDO: R$ {dinheiroTotal} ({dinheiroTotal / 10} FICHAS)");
-            Console.WriteLine(repetir_char('=', 60));
-            Console.WriteLine("PARTIDA ATUAL:");
-            // Usa divisão por 10.0 para forçar o resultado decimal (ex: 2.5)
-            Console.WriteLine($"  CASA: {timesFutebol[time_casa_global]} (ODD: {odds_futebol[0] / 10.0}x)");
-            Console.WriteLine($"  EMPATE: (ODD: {odds_futebol[1] / 10.0}x)");
-            Console.WriteLine($"  VISITANTE: {timesFutebol[time_visitante_global]} (ODD: {odds_futebol[2] / 10.0}x)");
-
-            if (aposta_futebol_global > 0)
-            {
-                string apostaFeita = "";
-                if (resultado_apostado_global == 1) apostaFeita = timesFutebol[time_casa_global];
-                else if (resultado_apostado_global == 2) apostaFeita = "EMPATE";
-                else apostaFeita = timesFutebol[time_visitante_global];
-
-                Console.WriteLine($"\n🎯 APOSTA ATUAL: {apostaFeita} - R$ {aposta_futebol_global}");
-            }
-
-            Console.WriteLine(repetir_char('=', 60));
-            Console.WriteLine("1. 💸 FAZER APOSTA");
-            Console.WriteLine("2. 🏟️ SIMULAR PARTIDA");
-            Console.WriteLine("3. 🔄 VER NOVA PARTIDA");
-            Console.WriteLine("0. 🔙 VOLTAR AO MENU PRINCIPAL");
-            Console.WriteLine(repetir_char('=', 60));
-            Console.Write("ESCOLHA UMA OPÇÃO: ");
-
-            try { opcao = Convert.ToInt32(Console.ReadLine()); } catch (FormatException) { opcao = -1; }
-
-            Console.Clear();
-
-            switch (opcao)
-            {
-                case 1:
+            case 1:
+                if (!jogo_ativo)
+                {
+                    fazer_aposta_futebol();
+                }
+                else
+                {
+                    Console.WriteLine("❌ O JOGO JÁ FOI SIMULADO! VEJA UMA NOVA PARTIDA (OPÇÃO 3).");
+                }
+                break;
+            case 2:
+                if (aposta_futebol_global > 0)
+                {
                     if (!jogo_ativo)
                     {
-                        fazer_aposta_futebol();
+                        simular_partida_futebol();
                     }
                     else
                     {
                         Console.WriteLine("❌ O JOGO JÁ FOI SIMULADO! VEJA UMA NOVA PARTIDA (OPÇÃO 3).");
                     }
-                    break;
-                case 2:
-                    if (aposta_futebol_global > 0)
-                    {
-                        if (!jogo_ativo)
-                        {
-                            simular_partida_futebol();
-                        }
-                        else
-                        {
-                            Console.WriteLine("❌ O JOGO JÁ FOI SIMULADO! VEJA UMA NOVA PARTIDA (OPÇÃO 3).");
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine("❌ VOCÊ PRECISA FAZER UMA APOSTA PRIMEIRO (OPÇÃO 1).");
-                    }
-                    break;
-                case 3:
-                    // Devolve dinheiro se aposta foi feita mas não simulada
-                    if (aposta_futebol_global > 0 && !jogo_ativo)
-                    {
-                        Console.WriteLine($"APOSTA DE R$ {aposta_futebol_global} CANCELADA E DEVOLVIDA.");
-                        dinheiroTotal += aposta_futebol_global;
-                    }
+                }
+                else
+                {
+                    Console.WriteLine("❌ VOCÊ PRECISA FAZER UMA APOSTA PRIMEIRO (OPÇÃO 1).");
+                }
+                break;
+            case 3:
+                if (aposta_futebol_global > 0 && !jogo_ativo)
+                {
+                    Console.WriteLine($"APOSTA DE R$ {aposta_futebol_global} CANCELADA E DEVOLVIDA.");
+                    dinheiroTotal += aposta_futebol_global;
+                }
 
-                    // Reseta tudo para a próxima partida
-                    time_casa_global = random.Next(0, timesFutebol.Length);
+                time_casa_global = random.Next(0, timesFutebol.Length);
+                time_visitante_global = random.Next(0, timesFutebol.Length);
+                while (time_casa_global == time_visitante_global)
+                {
                     time_visitante_global = random.Next(0, timesFutebol.Length);
-                    while (time_casa_global == time_visitante_global)
-                    {
-                        time_visitante_global = random.Next(0, timesFutebol.Length);
-                    }
-                    jogo_ativo = false;
-                    aposta_futebol_global = 0;
-                    resultado_apostado_global = 0;
+                }
+                jogo_ativo = false;
+                aposta_futebol_global = 0;
+                resultado_apostado_global = 0;
 
-                    Console.WriteLine("🔄 GERANDO NOVA PARTIDA...");
-                    break;
-                case 0:
-                    // Devolve dinheiro se aposta foi feita mas não simulada
-                    if (aposta_futebol_global > 0 && !jogo_ativo)
-                    {
-                        Console.WriteLine($"APOSTA DE R$ {aposta_futebol_global} CANCELADA E DEVOLVIDA.");
-                        dinheiroTotal += aposta_futebol_global;
-                    }
-                    return; // Sai do menu_futebol
-                default:
-                    Console.WriteLine("❌ OPÇÃO INVÁLIDA!");
-                    break;
-            }
+                Console.WriteLine("🔄 GERANDO NOVA PARTIDA...");
+                break;
+            case 0:
+                if (aposta_futebol_global > 0 && !jogo_ativo)
+                {
+                    Console.WriteLine($"APOSTA DE R$ {aposta_futebol_global} CANCELADA E DEVOLVIDA.");
+                    dinheiroTotal += aposta_futebol_global;
+                }
+                return;
+            default:
+                Console.WriteLine("❌ OPÇÃO INVÁLIDA!");
+                break;
+        }
 
-            if (opcao != 0)
-            {
-                Console.WriteLine("\nPRESSIONE ENTER PARA CONTINUAR...");
-                Console.ReadKey();
-                Console.Clear();
-            }
+        if (opcao != 0)
+        {
+            Console.WriteLine("\nPRESSIONE ENTER PARA CONTINUAR...");
+            Console.ReadKey();
+            Console.Clear();
+        }
+    }
+}
+
+void fazer_aposta_futebol()
+{
+    if (aposta_futebol_global > 0)
+    {
+        Console.WriteLine("CANCELANDO APOSTA ANTERIOR...");
+        dinheiroTotal += aposta_futebol_global;
+        aposta_futebol_global = 0;
+        resultado_apostado_global = 0;
+    }
+
+    Console.WriteLine("\n💸 === FAZER APOSTA ===");
+    Console.WriteLine($"1. {timesFutebol[time_casa_global]} (Odd: {odds_futebol[0] / 10.0}x)");
+    Console.WriteLine($"2. EMPATE (Odd: {odds_futebol[1] / 10.0}x)");
+    Console.WriteLine($"3. {timesFutebol[time_visitante_global]} (Odd: {odds_futebol[2] / 10.0}x)");
+
+    int resultado_aposta = 0;
+    while (resultado_aposta < 1 || resultado_aposta > 3)
+    {
+        Console.Write("EM QUAL RESULTADO DESEJA APOSTAR (1-3)? ");
+        try { resultado_aposta = Convert.ToInt32(Console.ReadLine()); } catch (FormatException) { }
+        if (resultado_aposta < 1 || resultado_aposta > 3)
+        {
+            Console.WriteLine("❌ OPÇÃO INVÁLIDA!");
         }
     }
 
-    void fazer_aposta_futebol()
+    int fichas_apostadas = 0;
+    while (fichas_apostadas <= 0 || fichas_apostadas > (dinheiroTotal / 10))
     {
-        // Cancela aposta anterior
-        if (aposta_futebol_global > 0)
+        Console.Write("QUANTAS FICHAS DESEJA APOSTAR? ");
+        try { fichas_apostadas = Convert.ToInt32(Console.ReadLine()); } catch (FormatException) { }
+        if (fichas_apostadas <= 0 || fichas_apostadas > (dinheiroTotal / 10))
         {
-            Console.WriteLine("CANCELANDO APOSTA ANTERIOR...");
-            dinheiroTotal += aposta_futebol_global;
-            aposta_futebol_global = 0;
-            resultado_apostado_global = 0;
+            Console.WriteLine($"❌ VALOR DE APOSTA INVÁLIDO! (Mín: 1, Máx: {dinheiroTotal / 10})");
+        }
+    }
+
+    Console.Clear();
+    int aposta = fichas_apostadas * 10;
+    dinheiroTotal -= aposta;
+
+    aposta_futebol_global = aposta;
+    resultado_apostado_global = resultado_aposta;
+
+    Console.WriteLine("✅ APOSTA CONFIRMADA!");
+    Console.WriteLine($"💰 VALOR: R$ {aposta}");
+    Console.WriteLine($"💳 SALDO RESTANTE: R$ {dinheiroTotal}");
+}
+
+void simular_partida_futebol()
+{
+    jogo_ativo = true;
+    placar_casa = 0;
+    placar_visitante = 0;
+    minuto_jogo = 0;
+
+    // NOVAS VARIÁVEIS DO JOGO
+    int posse_casa = 50;
+    int posse_visitante = 50;
+    int chutes_casa = 0;
+    int chutes_visitante = 0;
+    int chutes_gol_casa = 0;
+    int chutes_gol_visitante = 0;
+    int escanteios_casa = 0;
+    int escanteios_visitante = 0;
+    int faltas_casa = 0;
+    int faltas_visitante = 0;
+    int cartoes_amarelos_casa = 0;
+    int cartoes_amarelos_visitante = 0;
+    int cartoes_vermelhos_casa = 0;
+    int cartoes_vermelhos_visitante = 0;
+    
+    // Fatores que influenciam o jogo
+    int moral_casa = random.Next(60, 100);
+    int moral_visitante = random.Next(40, 85);
+    int cansaco_casa = 0;
+    int cansaco_visitante = 0;
+
+    Console.WriteLine("🏟️ O JOGO COMEÇA!");
+    Console.WriteLine($"CASA: {timesFutebol[time_casa_global]}");
+    Console.WriteLine($"VISITANTE: {timesFutebol[time_visitante_global]}");
+    Thread.Sleep(2000);
+
+    while (minuto_jogo < 90)
+    {
+        Thread.Sleep(500); // Aumentado de 100ms para 500ms (5x mais lento)
+        minuto_jogo += 3; // Reduzido de 5 para 3 minutos por rodada
+
+        // Aumenta cansaço ao longo do jogo
+        if (minuto_jogo > 60)
+        {
+            cansaco_casa += random.Next(1, 3);
+            cansaco_visitante += random.Next(1, 3);
         }
 
-        Console.WriteLine("\n💸 === FAZER APOSTA ===");
-        Console.WriteLine($"1. {timesFutebol[time_casa_global]} (Odd: {odds_futebol[0] / 10.0}x)");
-        Console.WriteLine($"2. EMPATE (Odd: {odds_futebol[1] / 10.0}x)");
-        Console.WriteLine($"3. {timesFutebol[time_visitante_global]} (Odd: {odds_futebol[2] / 10.0}x)");
+        // Ajusta posse de bola dinamicamente
+        int variacao_posse = random.Next(-5, 6);
+        posse_casa = Math.Max(20, Math.Min(80, posse_casa + variacao_posse));
+        posse_visitante = 100 - posse_casa;
 
-        int resultado_aposta = 0;
-        while (resultado_aposta < 1 || resultado_aposta > 3)
+        // Chances base ajustadas pelas odds
+        int chance_gol_casa = 25;
+        int chance_gol_visitante = 18;
+
+        if (odds_futebol[0] < odds_futebol[2])
         {
-            Console.Write("EM QUAL RESULTADO DESEJA APOSTAR (1-3)? ");
-            try { resultado_aposta = Convert.ToInt32(Console.ReadLine()); } catch (FormatException) { }
-            if (resultado_aposta < 1 || resultado_aposta > 3)
+            chance_gol_casa += 15;
+            moral_casa = Math.Min(100, moral_casa + 2);
+        }
+        else if (odds_futebol[2] < odds_futebol[0])
+        {
+            chance_gol_visitante += 12;
+            moral_visitante = Math.Min(100, moral_visitante + 2);
+        }
+
+        if (odds_futebol[1] > 35)
+        {
+            chance_gol_casa -= 5;
+            chance_gol_visitante -= 5;
+        }
+
+        // Ajusta chances pelo moral e cansaço
+        chance_gol_casa = chance_gol_casa * moral_casa / 100 - cansaco_casa / 2;
+        chance_gol_visitante = chance_gol_visitante * moral_visitante / 100 - cansaco_visitante / 2;
+        
+        // AUMENTA as chances de gol
+        chance_gol_casa += 20;
+        chance_gol_visitante += 20;
+
+        // Eventos do jogo
+        int evento = random.Next(1, 1001);
+        int evento_casa = random.Next(1, 1001);
+        int evento_visitante = random.Next(1, 1001);
+
+        // String para armazenar evento destacado
+        string eventoDestacado = "";
+        
+        // Gols
+        if (evento_casa <= chance_gol_casa)
+        {
+            placar_casa++;
+            chutes_casa++;
+            chutes_gol_casa++;
+            moral_casa = Math.Min(100, moral_casa + 10);
+            moral_visitante = Math.Max(30, moral_visitante - 8);
+            eventoDestacado = $"⚽⚽⚽ GOOOOOOL! {timesFutebol[time_casa_global].ToUpper()} MARCA! ⚽⚽⚽";
+        }
+        else if (evento_visitante <= chance_gol_visitante)
+        {
+            placar_visitante++;
+            chutes_visitante++;
+            chutes_gol_visitante++;
+            moral_visitante = Math.Min(100, moral_visitante + 10);
+            moral_casa = Math.Max(30, moral_casa - 8);
+            eventoDestacado = $"⚽⚽⚽ GOOOOOOL! {timesFutebol[time_visitante_global].ToUpper()} MARCA! ⚽⚽⚽";
+        }
+        // Chutes (sem gol)
+        else if (evento > 850 && posse_casa > 45)
+        {
+            chutes_casa++;
+            if (evento > 920)
             {
-                Console.WriteLine("❌ OPÇÃO INVÁLIDA!");
+                chutes_gol_casa++;
+                eventoDestacado = $"🎯 GRANDE CHANCE! Chute perigoso de {timesFutebol[time_casa_global]}!";
+            }
+            else
+            {
+                eventoDestacado = $"→ Chute de {timesFutebol[time_casa_global]} para fora";
             }
         }
-
-        int fichas_apostadas = 0;
-        while (fichas_apostadas <= 0 || fichas_apostadas > (dinheiroTotal / 10))
+        else if (evento > 850 && posse_visitante > 45)
         {
-            Console.Write("QUANTAS FICHAS DESEJA APOSTAR? ");
-            try { fichas_apostadas = Convert.ToInt32(Console.ReadLine()); } catch (FormatException) { }
-            if (fichas_apostadas <= 0 || fichas_apostadas > (dinheiroTotal / 10))
+            chutes_visitante++;
+            if (evento > 920)
             {
-                Console.WriteLine($"❌ VALOR DE APOSTA INVÁLIDO! (Mín: 1, Máx: {dinheiroTotal / 10})");
+                chutes_gol_visitante++;
+                eventoDestacado = $"🎯 GRANDE CHANCE! Chute perigoso de {timesFutebol[time_visitante_global]}!";
+            }
+            else
+            {
+                eventoDestacado = $"→ Chute de {timesFutebol[time_visitante_global]} para fora";
+            }
+        }
+        // Escanteios
+        else if (evento > 900 && evento <= 950)
+        {
+            if (posse_casa > posse_visitante)
+            {
+                escanteios_casa++;
+                eventoDestacado = $"🚩 ESCANTEIO para {timesFutebol[time_casa_global]}";
+            }
+            else
+            {
+                escanteios_visitante++;
+                eventoDestacado = $"🚩 ESCANTEIO para {timesFutebol[time_visitante_global]}";
+            }
+        }
+        // Cartões vermelhos (raro) - deve vir antes das faltas
+        else if (evento > 995)
+        {
+            if (random.Next(0, 2) == 0 && cartoes_vermelhos_casa == 0)
+            {
+                cartoes_vermelhos_casa++;
+                chance_gol_casa -= 10;
+                eventoDestacado = $"🟥🟥  EXPULSÃO! {timesFutebol[time_casa_global].ToUpper()} COM UM A MENOS!  🟥🟥";
+            }
+            else if (cartoes_vermelhos_visitante == 0)
+            {
+                cartoes_vermelhos_visitante++;
+                chance_gol_visitante -= 10;
+                eventoDestacado = $"🟥🟥  EXPULSÃO! {timesFutebol[time_visitante_global].ToUpper()} COM UM A MENOS!  🟥🟥";
+            }
+        }
+        // Cartões amarelos
+        else if (evento > 950 && evento <= 980)
+        {
+            if (faltas_casa > faltas_visitante)
+            {
+                cartoes_amarelos_casa++;
+                eventoDestacado = $"🟨  CARTÃO AMARELO para {timesFutebol[time_casa_global]}";
+            }
+            else if (faltas_visitante > 0)
+            {
+                cartoes_amarelos_visitante++;
+                eventoDestacado = $"🟨  CARTÃO AMARELO para {timesFutebol[time_visitante_global]}";
+            }
+        }
+        // Faltas
+        else if (evento > 800 && evento <= 850)
+        {
+            if (random.Next(0, 2) == 0)
+            {
+                faltas_casa++;
+                eventoDestacado = $"⚠️  Falta cometida por {timesFutebol[time_casa_global]}";
+            }
+            else
+            {
+                faltas_visitante++;
+                eventoDestacado = $"⚠️  Falta cometida por {timesFutebol[time_visitante_global]}";
             }
         }
 
         Console.Clear();
-        int aposta = fichas_apostadas * 10;
-        dinheiroTotal -= aposta;
-
-        aposta_futebol_global = aposta;
-        resultado_apostado_global = resultado_aposta;
-
-        Console.WriteLine("✅ APOSTA CONFIRMADA!");
-        Console.WriteLine($"💰 VALOR: R$ {aposta}");
-        Console.WriteLine($"💳 SALDO RESTANTE: R$ {dinheiroTotal}");
+        Console.WriteLine("\n");
+        Console.WriteLine($"{repetir_char('=', 60)}");
+        Console.WriteLine("                  ⚽ BRASFUT - AO VIVO ⚽");
+        Console.WriteLine($"{repetir_char('=', 60)}");
+        Console.WriteLine();
+        
+        // Placar grande e destacado
+        Console.WriteLine($"                     ⏱️  {minuto_jogo}' MINUTO");
+        Console.WriteLine();
+        Console.WriteLine($"        {timesFutebol[time_casa_global].ToUpper()}");
+        Console.WriteLine($"                    [ {placar_casa} ]");
+        Console.WriteLine("                      X");
+        Console.WriteLine($"                    [ {placar_visitante} ]");
+        Console.WriteLine($"        {timesFutebol[time_visitante_global].ToUpper()}");
+        Console.WriteLine();
+        Console.WriteLine($"{repetir_char('─', 60)}");
+        
+        // Evento em destaque
+        if (!string.IsNullOrEmpty(eventoDestacado))
+        {
+            Console.WriteLine();
+            Console.WriteLine($"{repetir_char(' ', 2)}{eventoDestacado}");
+            Console.WriteLine();
+            Console.WriteLine($"{repetir_char('─', 60)}");
+        }
+        
+        Console.WriteLine();
+        Console.WriteLine("  📊 ESTATÍSTICAS DA PARTIDA:");
+        Console.WriteLine();
+        
+        // Posse de bola com barra visual
+        Console.Write("  Posse:  ");
+        int barrasCasa = posse_casa / 5;
+        int barrasVisitante = posse_visitante / 5;
+        Console.Write($"[{repetir_char('█', barrasCasa)}{repetir_char('░', barrasVisitante)}]");
+        Console.WriteLine($"  {posse_casa}% x {posse_visitante}%");
+        
+        Console.WriteLine($"  Chutes:        {chutes_casa} ({chutes_gol_casa} no gol)  x  {chutes_visitante} ({chutes_gol_visitante} no gol)");
+        Console.WriteLine($"  Escanteios:    {escanteios_casa}  x  {escanteios_visitante}");
+        Console.WriteLine($"  Faltas:        {faltas_casa}  x  {faltas_visitante}");
+        Console.WriteLine($"  Cartões:       🟨 {cartoes_amarelos_casa} 🟥 {cartoes_vermelhos_casa}  x  🟨 {cartoes_amarelos_visitante} 🟥 {cartoes_vermelhos_visitante}");
+        Console.WriteLine();
+        Console.WriteLine($"{repetir_char('=', 60)}");
+        
+        // Pausa extra para eventos importantes
+        if (eventoDestacado.Contains("GOOOOOOL") || eventoDestacado.Contains("EXPULSÃO"))
+        {
+            Thread.Sleep(2500);
+        }
+        else if (eventoDestacado.Contains("GRANDE CHANCE") || eventoDestacado.Contains("CARTÃO"))
+        {
+            Thread.Sleep(1200);
+        }
     }
 
-    void simular_partida_futebol()
+    Console.WriteLine("\n🏁 FIM DE JOGO! 🏁");
+    Thread.Sleep(2500);
+    processar_resultado_futebol();
+}
+
+void processar_resultado_futebol()
+{
+    Console.WriteLine("\n📊 === RESULTADO DA APOSTA === 📊");
+    Console.WriteLine($"PLACAR FINAL: {timesFutebol[time_casa_global]} {placar_casa} x {placar_visitante} {timesFutebol[time_visitante_global]}");
+
+    int resultado_real = 0;
+    if (placar_casa > placar_visitante)
+        resultado_real = 1;
+    else if (placar_casa == placar_visitante)
+        resultado_real = 2;
+    else
+        resultado_real = 3;
+
+    string apostaFeitaStr = "";
+    if (resultado_apostado_global == 1) apostaFeitaStr = $"VITÓRIA {timesFutebol[time_casa_global]}";
+    else if (resultado_apostado_global == 2) apostaFeitaStr = "EMPATE";
+    else apostaFeitaStr = $"VITÓRIA {timesFutebol[time_visitante_global]}";
+
+    Console.WriteLine($"Sua aposta: R$ {aposta_futebol_global} em [{apostaFeitaStr}]");
+
+    if (resultado_real == resultado_apostado_global)
     {
-        jogo_ativo = true;
-        placar_casa = 0;
-        placar_visitante = 0;
-        minuto_jogo = 0;
+        int premio = (aposta_futebol_global * odds_futebol[resultado_apostado_global - 1]) / 10;
+        dinheiroTotal += premio;
+        vitoriasF++;
 
-        Console.WriteLine("🏟️ O JOGO COMEÇA!");
-        Console.WriteLine($"CASA: {timesFutebol[time_casa_global]}");
-        Console.WriteLine($"VISITANTE: {timesFutebol[time_visitante_global]}");
-
-        while (minuto_jogo < 90)
-        {
-            Thread.Sleep(100); // 100ms por "rodada"
-            minuto_jogo += 5; // Simula 5 minutos
-
-            int chance_gol_casa = 30; // Chance base
-            int chance_gol_visitante = 20; // Visitante tem desvantagem
-
-            // Ajusta a chance com base nas odds (quanto menor a odd, maior a chance)
-            if (odds_futebol[0] < odds_futebol[2])
-                chance_gol_casa += 15;
-            else if (odds_futebol[2] < odds_futebol[0])
-                chance_gol_visitante += 10;
-            
-            // Odds de empate altas diminuem chance de gol
-            if (odds_futebol[1] > 35)
-            {
-                chance_gol_casa -= 5;
-                chance_gol_visitante -= 5;
-            }
-
-            int gol_casa = random.Next(1, 1001);
-            int gol_visitante = random.Next(1, 1001);
-
-            Console.Clear();
-            Console.WriteLine("⚽ BRASFUT - AO VIVO ⚽");
-            Console.WriteLine($"{repetir_char('=', 40)}");
-            Console.WriteLine($"⏱️ MINUTO: {minuto_jogo}'");
-            Console.WriteLine($"CASA:      {timesFutebol[time_casa_global]} {placar_casa}");
-            Console.WriteLine($"VISITANTE: {timesFutebol[time_visitante_global]} {placar_visitante}");
-            Console.WriteLine($"{repetir_char('=', 40)}");
-
-            if (gol_casa <= chance_gol_casa)
-            {
-                placar_casa++;
-                Console.WriteLine($"\n🔥 GOOOOL DA CASA! {timesFutebol[time_casa_global]} marca aos {minuto_jogo}'!");
-                Thread.Sleep(1000); // Pausa para ver o gol
-            }
-            if (gol_visitante <= chance_gol_visitante)
-            {
-                placar_visitante++;
-                Console.WriteLine($"\n🔥 GOOOOL DO VISITANTE! {timesFutebol[time_visitante_global]} marca aos {minuto_jogo}'!");
-                Thread.Sleep(1000); // Pausa para ver o gol
-            }
-        }
-
-        Console.WriteLine("\n🏁 FIM DE JOGO! 🏁");
-        Thread.Sleep(2000);
-        processar_resultado_futebol();
+        Console.WriteLine("\n🎉 PARABÉNS! VOCÊ GANHOU! 🎉");
+        Console.WriteLine($"💰 PRÊMIO: R$ {premio}");
+        Console.WriteLine($"💳 NOVO SALDO: R$ {dinheiroTotal}");
     }
-
-    void processar_resultado_futebol()
+    else
     {
-        Console.WriteLine("\n📊 === RESULTADO DA APOSTA === 📊");
-        Console.WriteLine($"PLACAR FINAL: {timesFutebol[time_casa_global]} {placar_casa} x {placar_visitante} {timesFutebol[time_visitante_global]}");
-
-        int resultado_real = 0;
-        if (placar_casa > placar_visitante)
-            resultado_real = 1; // Casa venceu
-        else if (placar_casa == placar_visitante)
-            resultado_real = 2; // Empate
-        else
-            resultado_real = 3; // Visitante venceu
-
-        string apostaFeitaStr = "";
-        if (resultado_apostado_global == 1) apostaFeitaStr = $"VITÓRIA {timesFutebol[time_casa_global]}";
-        else if (resultado_apostado_global == 2) apostaFeitaStr = "EMPATE";
-        else apostaFeitaStr = $"VITÓRIA {timesFutebol[time_visitante_global]}";
-
-        Console.WriteLine($"Sua aposta: R$ {aposta_futebol_global} em [{apostaFeitaStr}]");
-
-        if (resultado_real == resultado_apostado_global)
-        {
-            // Calcula o prêmio. Ex: aposta 100, odd 2.5 (25) -> (100 * 25) / 10 = 250
-            int premio = (aposta_futebol_global * odds_futebol[resultado_apostado_global - 1]) / 10;
-            dinheiroTotal += premio;
-            vitoriasF++;
-
-            Console.WriteLine("\n🎉 PARABÉNS! VOCÊ GANHOU! 🎉");
-            Console.WriteLine($"💰 PRÊMIO: R$ {premio}");
-            Console.WriteLine($"💳 NOVO SALDO: R$ {dinheiroTotal}");
-        }
-        else
-        {
-            derrotasF++;
-            Console.WriteLine("\n😔 QUE PENA! VOCÊ PERDEU DESTA VEZ.");
-            Console.WriteLine($"💸 VALOR PERDIDO: R$ {aposta_futebol_global}");
-            Console.WriteLine($"💳 SALDO ATUAL: R$ {dinheiroTotal}");
-        }
-
-        // Reseta a aposta após o processamento
-        aposta_futebol_global = 0;
-        resultado_apostado_global = 0;
+        derrotasF++;
+        Console.WriteLine("\n😔 QUE PENA! VOCÊ PERDEU DESTA VEZ.");
+        Console.WriteLine($"💸 VALOR PERDIDO: R$ {aposta_futebol_global}");
+        Console.WriteLine($"💳 SALDO ATUAL: R$ {dinheiroTotal}");
     }
+
+    aposta_futebol_global = 0;
+    resultado_apostado_global = 0;
+}
 
 } // <--- CHAVE FINAL FECHANDO A CLASSE CASSINO
